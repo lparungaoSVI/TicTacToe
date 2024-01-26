@@ -1,7 +1,9 @@
 var gameCode;
-gameCode = getGeneratedCode();
+
 document.addEventListener("DOMContentLoaded", function () {
-    
+    gameCode = generateGameCode();
+    createGame();
+
     let currentPlayer = "X";
     var board = document.createElement("div");
     board.id = 'board';
@@ -109,6 +111,31 @@ function updateBoard(data) {
     }
 }
 
+function generateGameCode() {
+    // Generate a random 6-digit code
+    // var code = Math.floor(100000 + Math.random() * 900000);
+    var code = '123456';
+    return code;
+}
+
+function createGame() {
+    
+    var createUrl = `http://localhost:8080/tictactoe/tictactoeserver/createGame?key=${gameCode}`;
+    for (var i = 0; i < 3; i++) {
+        // Make a GET request to the servlet
+        fetch(createUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response data here
+                console.log("Game created:", data);
+            })
+            .catch(error => {
+                console.error("Error creating game:", error);
+            });
+    }
+
+}
+
 function reset() {
     var resetUrl = `http://localhost:8080/tictactoe/tictactoeserver/reset?key=${gameCode}`;
     // Make a GET request to the servlet
@@ -138,4 +165,5 @@ function check() {
             console.error(error);
         });
 }
+
 

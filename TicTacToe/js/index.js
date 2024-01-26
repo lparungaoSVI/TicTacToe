@@ -1,5 +1,3 @@
-var gameCode;
-
 document.addEventListener("DOMContentLoaded", function () {
 
     // Create the Start Game button
@@ -8,9 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
     createGameButton.id = "createGame";
     createGameButton.textContent = "Create Game";
     createGameButton.addEventListener("click", function () {
-        generateGameCode();
-        gameCode = getGeneratedCode();
-        createGame();
         window.location.href = 'game.html';
     });
 
@@ -63,20 +58,4 @@ function handleJoinButtonClick() {
     }
 }
 
-function createGame() {
-    
-    var createUrl = `http://localhost:8080/tictactoe/tictactoeserver/createGame?key=${gameCode}`;
-    for (var i = 0; i < 3; i++) {
-        // Make a GET request to the servlet
-        fetch(createUrl)
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response data here
-                console.log("Game created:", data);
-            })
-            .catch(error => {
-                console.error("Error creating game:", error);
-            });
-    }
 
-}
