@@ -6,10 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     createGameButton.id = "createGame";
     createGameButton.textContent = "Create Game";
     createGameButton.addEventListener("click", function () {
-        gameCode = generateGameCode();
-        localStorage.setItem('gameCode', gameCode);
-        createGame();
-        window.location.href = 'game.html';
+        openModal();
     });
 
 
@@ -19,17 +16,79 @@ document.addEventListener("DOMContentLoaded", function () {
     joinButton.id = "joinButton";
     joinButton.textContent = "Join Game";
     joinButton.addEventListener("click", function () {
-        openModal();
+        openJoinModal();
     });
 
     document.body.appendChild(createGameButton);
     document.body.appendChild(joinButton);
 
+    createJoinModal();
     createModal();
-
 });
-
 function createModal() {
+    var overlayDiv = document.createElement('div');
+    overlayDiv.className = 'overlay';
+    overlayDiv.id = 'overlay';
+
+    var modalContentDiv = document.createElement('div');
+    modalContentDiv.className = 'modal';
+    modalContentDiv.id = "createModal"
+
+    var h2Element = document.createElement('h2');
+    h2Element.innerHTML = 'Create Game Code';
+
+    var userInput = document.createElement("input");
+    userInput.type = "text";
+    userInput.placeholder = "(Auto-generate if empty)";
+    userInput.id = "userInput";
+
+    var btnDiv = document.createElement('div');
+    btnDiv.className = 'button-container';
+
+    var cancelBtn = document.createElement('button');
+    cancelBtn.className = 'sub-can-btn button';
+    cancelBtn.type = 'reset';
+    cancelBtn.formNoValidate = true;
+    cancelBtn.innerHTML = 'Cancel';
+    cancelBtn.onclick = closeModal;
+
+    var submitBtn = document.createElement('button');
+    submitBtn.className = 'sub-can-btn button';
+    submitBtn.type = 'submit';
+    submitBtn.innerHTML = 'Submit';
+
+    // Add an event listener to the submit button
+    submitBtn.addEventListener('click', function (event) {
+        // Get the input value and trim leading/trailing whitespaces
+        var inputValue = userInput.value.trim();
+
+        // Check if the trimmed input value is empty
+        if (inputValue === "") {
+            gameCode = generateGameCode();
+        
+        } else {
+            gameCode = inputValue;
+            closeModal();
+        }
+        localStorage.setItem('gameCode', gameCode);
+        createGame();
+        window.location.href = 'game.html';
+        closeModal();
+
+    });
+
+    btnDiv.appendChild(cancelBtn);
+    btnDiv.appendChild(submitBtn)
+
+    modalContentDiv.appendChild(h2Element);
+    modalContentDiv.appendChild(userInput);
+    modalContentDiv.appendChild(btnDiv);
+
+    document.body.appendChild(overlayDiv);
+    document.body.appendChild(modalContentDiv);
+}
+
+function createJoinModal() {
     var overlayDiv = document.createElement('div');
     overlayDiv.className = 'overlay';
     overlayDiv.id = 'overlay';
@@ -53,7 +112,7 @@ function createModal() {
     cancelBtn.type = 'reset';
     cancelBtn.formNoValidate = true;
     cancelBtn.innerHTML = 'Cancel';
-    cancelBtn.onclick = closeModal;
+    cancelBtn.onclick = closeJoinModal;
 
     var submitBtn = document.createElement('button');
     submitBtn.className = 'sub-can-btn button';
@@ -63,7 +122,7 @@ function createModal() {
     // Add an event listener to the submit button
     submitBtn.addEventListener('click', function (event) {
         handleJoinButtonClick();
-        closeModal();
+        closeJoinModal();
 
     });
 
@@ -80,43 +139,27 @@ function createModal() {
 }
 
 function openModal() {
-    document.getElementById('myModal').style.display = 'block';
+    document.getElementById('createModal').style.display = 'block';
     document.getElementById('overlay').style.display = 'block';
 }
 
 function closeModal() {
+    document.getElementById('createModal').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+}
+
+function openJoinModal() {
+    document.getElementById('myModal').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+}
+
+function closeJoinModal() {
     document.getElementById('myModal').style.display = 'none';
     document.getElementById('overlay').style.display = 'none';
 }
 
 function handleJoinButtonClick() {
-    var userInput = document.getElementById("userInput").value;
-    // Check if the user entered a valid 6-digit code
-    if (userInput !== null && userInput.match(/^\d{6}$/)) {
-        // Use the entered code in the URL for the servlet request
-        var servletURL = `http://localhost:8080/tictactoe/tictactoeserver/check?key=${userInput}`;
-
-        // Make an asynchronous request to the servlet
-        fetch(servletURL)
-            .then(response => response.json())
-            .then(data => {
-                // Check if the response from the servlet is true
-                if (data === true) {
-                    // Redirect to the game.html page
-                    window.location.href = 'game.html';
-                } else {
-                    // Show an error message or handle the case when the response is false
-                    alert("Invalid code. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                // Handle the error, e.g., show an error message to the user
-            });
-    } else {
-        // Show an error message or handle invalid input
-        alert("Please enter a valid 6-digit code.");
-    }
+    
 }
 
 function generateGameCode() {
@@ -127,7 +170,7 @@ function generateGameCode() {
 }
 
 function createGame() {
-    
+
     var createUrl = `http://localhost:8080/tictactoe/tictactoeserver/createGame?key=${gameCode}`;
     for (var i = 0; i < 3; i++) {
         // Make a GET request to the servlet

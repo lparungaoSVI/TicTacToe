@@ -53,6 +53,31 @@ body {
 }
 
 /*Popup*/
+#popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+#popup2 {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -124,6 +149,12 @@ section {
     font-size: 100px;
     color: #d7a62f;
     margin: 10px auto;
+}
+
+.game--subtitle {
+    font-size: 50px;
+    color: #d7a62f;
+    margin: 20px auto;
 }
 
 .game--container {

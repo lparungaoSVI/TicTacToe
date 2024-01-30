@@ -1,4 +1,180 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    var gameCode;
+    var playerTile;
+    async function checkGameExistence() {
+        console.log("checking " + gameCode);
+        try {
+            const response = await fetch(`http://localhost:8080/tictactoe/tictactoeserver/check?key=${gameCode}`);
+
+            if (!response.ok) {
+                throw new Error(`Failed to check game existence: ${response.status}`);
+            }
+
+            const gameExists = await response.json(); // Assuming the server responds with a JSON object indicating existence
+
+            return gameExists;
+        } catch (error) {
+            console.error('Error checking game existence:', error.message);
+            return false; // Return false in case of an error
+        }
+    }
+
+    async function createGame() {
+        console.log("Creating " + gameCode);
+        try {
+
+            fetch(`http://localhost:8080/tictactoe/tictactoeserver/createGame?key=${gameCode}`)
+                .then(res => res.text())
+                .then(data => {
+                    console.log("DATA: " + data);
+                    playerTile = data;
+                    console.log("PlayerTile: " + playerTile);
+                });
+
+
+
+        } catch (error) {
+            console.error("Error creating game:", error.message);
+        }
+    }
+
+    function reset() {
+        console.log("Resetting " + gameCode);
+        var resetUrl = `http://localhost:8080/tictactoe/tictactoeserver/reset?key=${gameCode}`;
+        // Make a GET request to the servlet
+        fetch(resetUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response data here
+                console.log(data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    function createPopUp() {
+        // Create the popup div
+        var popupDiv = document.createElement('div');
+        popupDiv.id = 'popup';
+        popupDiv.style.display = 'none';
+
+        // Create the paragraph for the popup text
+        var popupText = document.createElement('p');
+        popupText.id = 'popupText';
+
+        // Create the close button for the popup
+        var closePopupBtn = document.createElement('button');
+        closePopupBtn.id = 'closePopup';
+        closePopupBtn.textContent = 'Close';
+
+        // Append the paragraph and button to the popup div
+        popupDiv.appendChild(popupText);
+        popupDiv.appendChild(closePopupBtn);
+
+        // Append the popup div to the document body
+        document.body.appendChild(popupDiv);
+    }
+
+    function createModal(modalId, h2Text, placeholder) {
+        var overlayDiv = document.createElement('div');
+        overlayDiv.className = 'overlay';
+        overlayDiv.id = 'overlay';
+
+        var modalContentDiv = document.createElement('div');
+        modalContentDiv.className = 'modal';
+        modalContentDiv.id = modalId;
+
+        var h2Element = document.createElement('h2');
+        h2Element.innerHTML = h2Text;
+
+        var userInput = document.createElement("input");
+        userInput.type = "text";
+        userInput.placeholder = placeholder;
+        userInput.id = "userInput";
+
+        var btnDiv = document.createElement('div');
+        btnDiv.className = 'button-container';
+
+        var cancelBtn = document.createElement('button');
+        cancelBtn.className = 'sub-can-btn button';
+        cancelBtn.type = 'reset';
+        cancelBtn.formNoValidate = true;
+        cancelBtn.innerHTML = 'Cancel';
+        cancelBtn.onclick = function () {
+            userInput.value = '';
+            closeModal(modalId);
+        };
+
+        var submitBtn = document.createElement('button');
+        submitBtn.className = 'sub-can-btn button';
+        submitBtn.type = 'submit';
+        submitBtn.innerHTML = 'Submit';
+
+        // Add an event listener to the submit button
+        submitBtn.addEventListener('click', async function (event) {
+            var inputValue = userInput.value.trim();
+            if (userInput == null) {
+                inputValue = generateGameCode();
+            }
+            gameCode = inputValue;
+            var gameExists = await checkGameExistence();
+            // Check if the response from the servlet is true
+            if (gameExists === true) {
+                codeText.innerHTML = 'SPECTATOR';
+                closeModal(modalId);
+            } else {
+                if (playerTile == null) {
+                    createGame();
+                    userInput.value = '';
+                    codeText.innerHTML = `CODE: ${gameCode}`;
+                    closeModal(modalId);
+                }
+                else {
+                    var popup = document.getElementById('popup');
+                    var popupText = document.getElementById('popupText');
+                    var closePopupBtn = document.getElementById('closePopup');
+    
+                    popupText.innerText = "You are in a game";
+                    popup.style.display = 'block';
+    
+                    // Close the popup when the close button is clicked
+                    closePopupBtn.addEventListener('click', function () {
+                        popup.style.display = 'none';
+                    });
+                }
+            }
+        });
+
+        btnDiv.appendChild(cancelBtn);
+        btnDiv.appendChild(submitBtn)
+
+        modalContentDiv.appendChild(h2Element);
+        modalContentDiv.appendChild(userInput);
+        modalContentDiv.appendChild(btnDiv);
+
+        document.body.appendChild(overlayDiv);
+        document.body.appendChild(modalContentDiv);
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+
+    createModal("createModal", "Enter Game Code", "(Auto-generate if empty)", true);
+    // createModal("joinModal", "Enter Game", "Enter Game Code", false);
+    createPopUp();
+
+
+
     // Create section element
     const section = document.createElement('section');
 
@@ -6,6 +182,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const h1 = document.createElement('h1');
     h1.className = 'game--title';
     h1.textContent = 'Tic-Tac-Toe';
+
+    // Create h2 element with class "game--status"
+    const codeText = document.createElement('h2');
+    codeText.className = 'game--subtitle';
+    codeText.innerHTML = "CODE";
 
     // Create game container div
     const gameContainer = document.createElement('div');
@@ -23,20 +204,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const h2 = document.createElement('h2');
     h2.className = 'game--status';
 
-    // Create check button
-    const checkButton = document.createElement('button');
-    checkButton.className = 'game-button check-btn';
-    checkButton.textContent = 'Check';
+    // Create create button
+    const createButton = document.createElement('button');
+    createButton.className = 'game-button crt-btn';
+    createButton.textContent = 'Create/Join';
 
     // Create reset button
     const resetButton = document.createElement('button');
     resetButton.className = 'game-button rst-btn';
     resetButton.textContent = 'Reset';
-
-    // Create check button
-    const createButton = document.createElement('button');
-    createButton.className = 'game-button crt-btn';
-    createButton.textContent = 'Create';
 
     // Create start button
     const startButton = document.createElement('button');
@@ -45,108 +221,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Append all elements to the section
     section.appendChild(h1);
+    section.appendChild(codeText);
     section.appendChild(gameContainer);
     section.appendChild(h2);
-    section.appendChild(checkButton);
-    section.appendChild(resetButton);
     section.appendChild(createButton);
+
+    section.appendChild(resetButton);
     section.appendChild(startButton);
 
     // Append the section to the body of the HTML document
     document.body.appendChild(section);
 
-    var gameCode = '123456';
+
 
     const statusDisplay = document.querySelector('.game--status');
 
     const welcome = () => `Welcome to Tic Tac Toe`;
     const noGame = () => `No Game to Reset`;
     const gameNotExisting = () => `Game is not existing`;
+    const gameReset = () => `Game was Reset`;
     const gameIsReady = () => `Game is Ready. Press Start.`;
+
 
     statusDisplay.innerHTML = welcome();
 
     var intervalId;
 
-    async function checkGameExistence() {
-        try {
-            const response = await fetch(`http://localhost:8080/tictactoe/tictactoeserver/check?key=${gameCode}`);
-
-            if (!response.ok) {
-                throw new Error(`Failed to check game existence: ${response.status}`);
-            }
-
-            const gameExists = await response.json(); // Assuming the server responds with a JSON object indicating existence
-
-            return gameExists;
-        } catch (error) {
-            console.error('Error checking game existence:', error.message);
-            return false; // Return false in case of an error
-        }
-    }
-
-    function createGame() {
-        var createUrl = `http://localhost:8080/tictactoe/tictactoeserver/createGame?key=${gameCode}`;
-        for (var i = 0; i < 3; i++) {
-            // Make a GET request to the servlet
-            fetch(createUrl)
-                .then(response => response.json())
-                .then(data => {
-                    // Handle the response data here
-                    console.log("Game created:", data);
-                })
-                .catch(error => {
-                    console.error("Error creating game:", error);
-                });
-        }
-
-    }
-
-    function reset() {
-        var resetUrl = `http://localhost:8080/tictactoe/tictactoeserver/reset?key=${gameCode}`;
-        // Make a GET request to the servlet
-        fetch(resetUrl)
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response data here
-                console.log(data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }
-
-    document.querySelector('.check-btn').addEventListener('click', async () => {
-        clearInterval(intervalId);
-        const gameExists = await checkGameExistence();
-
-        if (gameExists) {
-            statusDisplay.innerHTML = gameIsReady();
-        } else {
-            statusDisplay.innerHTML = gameNotExisting();
-        }
-    });
 
     document.querySelector('.crt-btn').addEventListener('click', async () => {
         clearInterval(intervalId);
-        const gameExists = await checkGameExistence();
-
-        if (gameExists) {
-            statusDisplay.innerHTML = gameIsReady();
-        } else {
+        if (gameCode == null || gameCode == ''){
+            openModal("createModal");
+        }
+        else{
             createGame();
-            statusDisplay.innerHTML = gameIsReady();
         }
     });
+
+
     document.querySelector('.rst-btn').addEventListener('click', async () => {
         clearInterval(intervalId);
         const gameExists = await checkGameExistence();
 
         if (gameExists) {
             reset();
-            statusDisplay.innerHTML = welcome();
+            statusDisplay.innerHTML = gameReset();
         } else {
-            createGame();
             statusDisplay.innerHTML = noGame();
         }
     });
@@ -247,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             function handleResultValidation() {
-                
+
                 for (let i = 0; i <= 7; i++) {
                     const winCondition = winningConditions[i];
                     const a = gameState[winCondition[0]];
