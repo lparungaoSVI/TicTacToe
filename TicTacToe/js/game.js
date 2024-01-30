@@ -160,6 +160,6 @@ window.addEventListener('storage', (event) => {
 });
 
 document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', handleCellClick));
-document.querySelector('.game--restart').addEventListener('click', handleRestartGame);
+document.querySelector('.rst-btn').addEventListener('click', handleRestartGame);
 
 });
