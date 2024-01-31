@@ -2,8 +2,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var gameCode;
     var playerTile;
+    var playerScore = 0;
+
+    function generateGameCode() {
+        // Generate a random 6-digit code
+        var code = Math.floor(100000 + Math.random() * 900000);
+        return code;
+    }
+
     async function checkGameExistence() {
-        console.log("checking " + gameCode);
         try {
             const response = await fetch(`http://localhost:8080/tictactoe/tictactoeserver/check?key=${gameCode}`);
 
@@ -40,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function reset() {
+        playerTile = null;
         console.log("Resetting " + gameCode);
         var resetUrl = `http://localhost:8080/tictactoe/tictactoeserver/reset?key=${gameCode}`;
         // Make a GET request to the servlet
@@ -115,30 +123,33 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add an event listener to the submit button
         submitBtn.addEventListener('click', async function (event) {
             var inputValue = userInput.value.trim();
-            if (userInput == null) {
+            if (userInput.value === '' || userInput.value == null) {
                 inputValue = generateGameCode();
             }
             gameCode = inputValue;
             var gameExists = await checkGameExistence();
             // Check if the response from the servlet is true
             if (gameExists === true) {
-                codeText.innerHTML = 'SPECTATOR';
+                codeText.innerHTML = `CODE: ${gameCode}`;
+                playerText.innerHTML = "Player: Spectator"
                 closeModal(modalId);
             } else {
                 if (playerTile == null) {
                     createGame();
+                    statusDisplay.innerHTML = gameIsReady();
                     userInput.value = '';
                     codeText.innerHTML = `CODE: ${gameCode}`;
                     closeModal(modalId);
+
                 }
                 else {
                     var popup = document.getElementById('popup');
                     var popupText = document.getElementById('popupText');
                     var closePopupBtn = document.getElementById('closePopup');
-    
+
                     popupText.innerText = "You are in a game";
                     popup.style.display = 'block';
-    
+
                     // Close the popup when the close button is clicked
                     closePopupBtn.addEventListener('click', function () {
                         popup.style.display = 'none';
@@ -168,12 +179,13 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('overlay').style.display = 'none';
     }
 
-
     createModal("createModal", "Enter Game Code", "(Auto-generate if empty)", true);
     // createModal("joinModal", "Enter Game", "Enter Game Code", false);
     createPopUp();
 
 
+    var gameDiv = document.createElement('div');
+    gameDiv.id = 'gameDiv';
 
     // Create section element
     const section = document.createElement('section');
@@ -183,10 +195,30 @@ document.addEventListener("DOMContentLoaded", function () {
     h1.className = 'game--title';
     h1.textContent = 'Tic-Tac-Toe';
 
-    // Create h2 element with class "game--status"
+    var subtitleDiv = document.createElement('div');
+    subtitleDiv.id = 'subtitleDiv';
+
+    var subtitleRow = document.createElement('div');
+    subtitleRow.id = 'subtitleRow';
+
     const codeText = document.createElement('h2');
     codeText.className = 'game--subtitle';
-    codeText.innerHTML = "CODE";
+    codeText.innerHTML = "CODE: ";
+
+    const scoreText = document.createElement('h2');
+    scoreText.className = 'game--subtitle';
+    const score = () => `Score: ${playerScore}`;
+    scoreText.innerHTML = score();
+
+    subtitleRow.appendChild(codeText);
+    subtitleRow.appendChild(scoreText);
+
+    const playerText = document.createElement('h2');
+    playerText.className = 'game--subtitle';
+    playerText.innerHTML = "Player: ";
+
+    subtitleDiv.appendChild(subtitleRow);
+    subtitleDiv.appendChild(playerText);
 
     // Create game container div
     const gameContainer = document.createElement('div');
@@ -204,6 +236,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const h2 = document.createElement('h2');
     h2.className = 'game--status';
 
+    var gameButtons = document.createElement('div');
+    gameButtons.id = 'gameButtons';
+
     // Create create button
     const createButton = document.createElement('button');
     createButton.className = 'game-button crt-btn';
@@ -219,28 +254,32 @@ document.addEventListener("DOMContentLoaded", function () {
     startButton.className = 'game-button start-btn';
     startButton.textContent = 'Start';
 
+    gameButtons.appendChild(createButton);
+    gameButtons.appendChild(resetButton);
+    gameButtons.appendChild(startButton);
+
     // Append all elements to the section
     section.appendChild(h1);
-    section.appendChild(codeText);
+    section.appendChild(subtitleDiv);
     section.appendChild(gameContainer);
     section.appendChild(h2);
-    section.appendChild(createButton);
+    section.appendChild(gameButtons);
 
-    section.appendChild(resetButton);
-    section.appendChild(startButton);
+    gameDiv.appendChild(section);
 
     // Append the section to the body of the HTML document
-    document.body.appendChild(section);
+    document.body.appendChild(gameDiv);
 
-
+    window.addEventListener('beforeunload', function (event) {
+        reset();
+    });
 
     const statusDisplay = document.querySelector('.game--status');
 
     const welcome = () => `Welcome to Tic Tac Toe`;
-    const noGame = () => `No Game to Reset`;
-    const gameNotExisting = () => `Game is not existing`;
+    const gameNotExisting = () => `Game not Ready. Make sure there both players are ready`;
     const gameReset = () => `Game was Reset`;
-    const gameIsReady = () => `Game is Ready. Press Start.`;
+    const gameIsReady = () => `Press Start.`;
 
 
     statusDisplay.innerHTML = welcome();
@@ -250,31 +289,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector('.crt-btn').addEventListener('click', async () => {
         clearInterval(intervalId);
-        if (gameCode == null || gameCode == ''){
+        if (gameCode == null || gameCode == '') {
             openModal("createModal");
         }
-        else{
-            createGame();
+        else {
+            if (playerTile == null) {
+                createGame();
+                statusDisplay.innerHTML = gameIsReady();
+                userInput.value = '';
+                codeText.innerHTML = `CODE: ${gameCode}`;
+            }
+            else {
+                var popup = document.getElementById('popup');
+                var popupText = document.getElementById('popupText');
+                var closePopupBtn = document.getElementById('closePopup');
+
+                popupText.innerText = "You are in the game.";
+                popup.style.display = 'block';
+
+                // Close the popup when the close button is clicked
+                closePopupBtn.addEventListener('click', function () {
+                    popup.style.display = 'none';
+                });
+            }
         }
     });
 
 
     document.querySelector('.rst-btn').addEventListener('click', async () => {
-        clearInterval(intervalId);
-        const gameExists = await checkGameExistence();
-
-        if (gameExists) {
+        if (playerTile == 'X' || playerTile == "O") {
+            clearInterval(intervalId);
             reset();
+            playerText.innerHTML = 'Player: '
             statusDisplay.innerHTML = gameReset();
-        } else {
-            statusDisplay.innerHTML = noGame();
         }
+
     });
 
     document.querySelector('.start-btn').addEventListener('click', async () => {
+        playerText.innerHTML = `Player: ${playerTile}`
         const gameExists = await checkGameExistence();
 
         if (gameExists) {
+            var onGoing = true;
 
             let currentPlayer = "X";
             let gameState = ["", "", "", "", "", "", "", "", ""];
@@ -305,26 +362,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Function to initialize the game state from local storage
             async function getBoard() {
-                try {
-                    const response = await fetch(`http://localhost:8080/tictactoe/tictactoeserver/board?key=${gameCode}`);
+                var gameExists = await checkGameExistence();
+                if (gameExists) {
+                    try {
+                        const response = await fetch(`http://localhost:8080/tictactoe/tictactoeserver/board?key=${gameCode}`);
 
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch game board: ${response.status}`);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch game board: ${response.status}`);
+                        }
+
+                        const boardString = await response.text();
+                        gameState = boardString.split(':'); // Assuming the board is represented as "X:O:X:O:X:O:X:O:X:"
+                        updateBoard();
+                        handleResultValidation();
+                        // Count the number of 'X' and 'O' in the initial board state
+                        const countX = gameState.filter(tile => tile === 'X').length;
+                        const countO = gameState.filter(tile => tile === 'O').length;
+
+                        // Set the currentPlayer based on the counts
+                        currentPlayer = countX > countO ? 'O' : 'X';
+
+                    } catch (error) {
+                        console.error('Error initializing game:', error.message);
                     }
-
-                    const boardString = await response.text();
-                    gameState = boardString.split(':'); // Assuming the board is represented as "X:O:X:O:X:O:X:O:X:"
-                    updateBoard();
-                    handleResultValidation();
-                    // Count the number of 'X' and 'O' in the initial board state
-                    const countX = gameState.filter(tile => tile === 'X').length;
-                    const countO = gameState.filter(tile => tile === 'O').length;
-
-                    // Set the currentPlayer based on the counts
-                    currentPlayer = countX > countO ? 'O' : 'X';
-
-                } catch (error) {
-                    console.error('Error initializing game:', error.message);
+                }
+                else {
+                    handleExitEvent();
                 }
             }
 
@@ -344,7 +407,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Function to handle playing a cell and updating the game state on the server
             async function handleCellPlayed(clickedCell, clickedCellIndex) {
-                if (gameState[clickedCellIndex] !== "" || roundWon) {
+                if (gameState[clickedCellIndex] !== "" || roundWon || playerTile != currentPlayer) {
                     return;
                 }
 
@@ -367,7 +430,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             function handleResultValidation() {
-
                 for (let i = 0; i <= 7; i++) {
                     const winCondition = winningConditions[i];
                     const a = gameState[winCondition[0]];
@@ -382,8 +444,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 if (roundWon) {
-                    clearInterval(intervalId);
                     statusDisplay.innerHTML = winningMessage();
+                    clearInterval(intervalId);
+                    if (currentPlayer == playerTile) {
+                        playerScore++;
+                    }
+
+                    scoreText.innerHTML = score();
                     return;
                 }
 
@@ -391,8 +458,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (roundDraw) {
                     clearInterval(intervalId);
                     statusDisplay.innerHTML = drawMessage();
+
                     return;
                 }
+            }
+            function handleExitEvent() {
+                roundWon = true;
+                statusDisplay.innerHTML = "Other player left. You won.";
+                clearInterval(intervalId);
+                playerScore++;
+                scoreText.innerHTML = score();
+
             }
 
             document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', handleCellClick));
