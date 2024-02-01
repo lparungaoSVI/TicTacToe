@@ -119,21 +119,21 @@ section {
 
 .game--title {
     font-size: 65px;
-    margin: 0px 0px 60px 0px;
+    margin: 0px 0px 30px 0px;
     color: #A9BEC8;
 }
 
 #subtitleDiv {
     display: inline-block;
     padding: 0px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     width: 400px;
 }
 
 #subtitleRow {
     padding: 0px;
     display: flex;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     justify-content: space-between;
 }
 
@@ -159,7 +159,7 @@ section {
 }
 
 .game--status {
-    font-size: 45px;
+    font-size: 40px;
     margin: 20px auto;
     margin-bottom: 30px;
     color: #A9BEC8;
@@ -238,7 +238,7 @@ section {
 
     .game--title {
         font-size: 35px;
-        margin: 0px 0px 30px 0px;
+        margin: 0px 0px 20px 0px;
     }
 
     .game--status {
@@ -273,7 +273,7 @@ section {
 
     .game--title {
         font-size: 35px;
-        margin: 0px 0px 30px 0px;
+        margin: 0px 0px 20px 0px;
     }
 
     .game--status {
@@ -308,8 +308,8 @@ section {
     }
 
     .game--title {
-        font-size: 40px;
-        margin: 0px 0px 30px 0px;
+        font-size: 38px;
+        margin: 0px 0px 25px 0px;
     }
 
     .game--status {
@@ -350,7 +350,7 @@ section {
     }
 
     .game--status {
-        font-size: 35px;
+        font-size: 32px;
         margin: 10px auto;
         margin-bottom: 30px;
         color: #A9BEC8;

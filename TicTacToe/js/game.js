@@ -265,7 +265,9 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(section);
 
     window.addEventListener('beforeunload', function (event) {
-        reset();
+        if (playerTile == 'X' || playerTile == 'O'){
+            reset();
+        }
     });
 
     const statusDisplay = document.querySelector('.game--status');
@@ -321,11 +323,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.querySelector('.start-btn').addEventListener('click', async () => {
-        playerText.innerHTML = `Player: ${playerTile}`
+
         const gameExists = await checkGameExistence();
 
         if (gameExists) {
-            var onGoing = true;
+            if (playerTile == 'X' || playerTile == 'O') {
+                playerText.innerHTML = `Player: ${playerTile}`
+            }
+            else {
+                playerText.innerHTML = `Player: Spectator`
+            }
+
 
             let currentPlayer = "X";
             let gameState = ["", "", "", "", "", "", "", "", ""];
