@@ -100,7 +100,6 @@ body {
 
 /*Game*/
 section {
-    overflow-y: auto;
     text-align: center;
     justify-content: center;
     padding: 30px;
@@ -219,5 +218,156 @@ section {
 
 /* Extra Large Devices (large desktops) */
 @media screen and (min-width: 1200px) {
+    /* Styles for extra-large devices */
+}
+
+
+
+/*height changes*/
+/* Extra Small Devices (phones) */
+@media screen and (max-height: 567px) {
+
+    .cell {
+        width: 50px;
+        height: 50px;
+    }
+
+    .game--container {
+        width: 153px;
+    }
+
+    .game--title {
+        font-size: 35px;
+        margin: 0px 0px 30px 0px;
+    }
+
+    .game--status {
+        font-size: 24px;
+        margin: 10px auto;
+        margin-bottom: 30px;
+        color: #A9BEC8;
+    }
+
+    .game--subtitle {
+        font-size: 18px;
+    }
+
+    .game-button {
+        width: 120px;
+        height: 30px;
+        font-size: 18px;
+    }
+}
+
+
+/* Small Devices (tablets) */
+@media screen and (min-height: 568px) and (max-height: 619px) {
+    .cell {
+        width: 50px;
+        height: 50px;
+    }
+
+    .game--container {
+        width: 153px;
+    }
+
+    .game--title {
+        font-size: 35px;
+        margin: 0px 0px 30px 0px;
+    }
+
+    .game--status {
+        font-size: 24px;
+        margin: 10px auto;
+        margin-bottom: 30px;
+        color: #A9BEC8;
+    }
+
+    .game--subtitle {
+        font-size: 18px;
+    }
+
+    .game-button {
+        width: 120px;
+        height: 30px;
+        font-size: 18px;
+    }
+}
+
+/* Medium Devices (tablets, small laptops) */
+@media screen and (min-height: 620px) and (max-height: 749px) {
+
+    /* Styles for medium-sized devices */
+    .cell {
+        width: 60px;
+        height: 60px;
+    }
+
+    .game--container {
+        width: 184px;
+    }
+
+    .game--title {
+        font-size: 40px;
+        margin: 0px 0px 30px 0px;
+    }
+
+    .game--status {
+        font-size: 28px;
+        margin: 10px auto;
+        margin-bottom: 30px;
+        color: #A9BEC8;
+    }
+
+    .game--subtitle {
+        font-size: 20px;
+    }
+
+    .game-button {
+        width: 120px;
+        height: 35px;
+        font-size: 20px;
+    }
+
+}
+
+/* Large Devices (desktops) */
+@media screen and (min-height: 750px) and (max-height: 859px) {
+
+    /* Styles for large devices */
+    .cell {
+        width: 80px;
+        height: 80px;
+    }
+
+    .game--container {
+        width: 245px;
+    }
+
+    .game--title {
+        font-size: 50px;
+        margin: 0px 0px 30px 0px;
+    }
+
+    .game--status {
+        font-size: 35px;
+        margin: 10px auto;
+        margin-bottom: 30px;
+        color: #A9BEC8;
+    }
+
+    .game--subtitle {
+        font-size: 25px;
+    }
+
+    .game-button {
+        width: 120px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* Extra Large Devices (large desktops) */
+@media screen and (min-height: 860px) {
     /* Styles for extra-large devices */
 }
