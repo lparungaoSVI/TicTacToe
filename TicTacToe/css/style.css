@@ -107,6 +107,9 @@ section {
 }
 
 .cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-family: "Permanent Marker", cursive;
     width: 100px;
     height: 100px;
@@ -230,6 +233,7 @@ section {
     .cell {
         width: 50px;
         height: 50px;
+        font-size: 35px;
     }
 
     .game--container {
@@ -265,6 +269,7 @@ section {
     .cell {
         width: 50px;
         height: 50px;
+        font-size: 40px;
     }
 
     .game--container {
@@ -301,6 +306,7 @@ section {
     .cell {
         width: 60px;
         height: 60px;
+        font-size: 50px;
     }
 
     .game--container {
@@ -338,6 +344,7 @@ section {
     .cell {
         width: 80px;
         height: 80px;
+        font-size: 60px;
     }
 
     .game--container {

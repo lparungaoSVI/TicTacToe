@@ -180,7 +180,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     createModal("createModal", "Enter Game Code", "(Auto-generate if empty)", true);
-    // createModal("joinModal", "Enter Game", "Enter Game Code", false);
     createPopUp();
 
     // Create section element
@@ -374,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
 
                         const boardString = await response.text();
-                        gameState = boardString.split(':'); // Assuming the board is represented as "X:O:X:O:X:O:X:O:X:"
+                        gameState = boardString.split(':').slice(0,9); // Assuming the board is represented as "X:O:X:O:X:O:X:O:X:"
                         updateBoard();
                         handleResultValidation();
                         // Count the number of 'X' and 'O' in the initial board state
@@ -460,7 +459,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (roundDraw) {
                     clearInterval(intervalId);
                     statusDisplay.innerHTML = drawMessage();
-
+                    
                     return;
                 }
             }
