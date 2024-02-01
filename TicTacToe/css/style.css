@@ -1,5 +1,10 @@
+@font-face {
+    font-family: "Outfit";
+    src: url("../fonts/outfit.ttf");
+}
+
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Outfit', sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
@@ -7,7 +12,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #1A2B33;
 }
 
 .button {
@@ -94,21 +99,12 @@ body {
 }
 
 /*Game*/
-#gameDiv {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #192f53;
-}
-
 section {
     overflow-y: auto;
     text-align: center;
+    justify-content: center;
     padding: 30px;
     margin: auto;
-    background-color: #192f53;
 }
 
 .cell {
@@ -124,13 +120,15 @@ section {
 
 .game--title {
     font-size: 65px;
-    color: #3498db;
     margin: 0px 0px 60px 0px;
+    color: #A9BEC8;
 }
 
 #subtitleDiv {
+    display: inline-block;
     padding: 0px;
     margin-bottom: 40px;
+    width: 400px;
 }
 
 #subtitleRow {
@@ -143,8 +141,12 @@ section {
 .game--subtitle {
     display: inline-block;
     font-size: 30px;
-    margin: 0px 50px;
-    color: #3498db;
+    color: #A9BEC8;
+    background: #1E3640;
+    padding: 5px 15px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, .3);
+    border-radius: 5%;
+    margin: 0px;
 }
 
 .game--container {
@@ -152,33 +154,30 @@ section {
     grid-template-columns: repeat(3, auto);
     width: 306px;
     margin: 10px auto;
-    background-color: #11213a;
-    color: #04c0b2;
+    background-color: #1E3640;
+    color: #34C3BE;
     margin-bottom: 30px;
 }
 
 .game--status {
     font-size: 45px;
-    color: #3498db;
     margin: 20px auto;
     margin-bottom: 30px;
+    color: #A9BEC8;
 }
 
 #gameButtons {
-    display: flex;
-    width: 500px;
+    display: inline;
     justify-content: space-between;
 }
 
 .game-button {
     display: inline;
-    background-color: #f7e4ac;
+    background-color: #F2B138;
     width: 145px;
     height: 50px;
     font-size: 22px;
-    color: #5586e2;
-    box-shadow: 2px 2px 2px 2px #2980b9;
-    border: 2px solid #3498db;
+    color: #1A2B33;
 }
 
 /*Game*/
@@ -188,10 +187,18 @@ section {
     .game--status {
         font-size: 35px;
     }
+
+    .game-button {
+        width: 120px;
+        height: 40px;
+        font-size: 20px;
+    }
+
 }
 
 /* Small Devices (tablets) */
 @media screen and (min-width: 576px) and (max-width: 767px) {
+
     /* Styles for small tablets */
     .game--status {
         font-size: 45px;

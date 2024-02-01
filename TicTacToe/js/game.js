@@ -183,10 +183,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // createModal("joinModal", "Enter Game", "Enter Game Code", false);
     createPopUp();
 
-
-    var gameDiv = document.createElement('div');
-    gameDiv.id = 'gameDiv';
-
     // Create section element
     const section = document.createElement('section');
 
@@ -265,10 +261,8 @@ document.addEventListener("DOMContentLoaded", function () {
     section.appendChild(h2);
     section.appendChild(gameButtons);
 
-    gameDiv.appendChild(section);
-
     // Append the section to the body of the HTML document
-    document.body.appendChild(gameDiv);
+    document.body.appendChild(section);
 
     window.addEventListener('beforeunload', function (event) {
         reset();
