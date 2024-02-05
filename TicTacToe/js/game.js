@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.appendChild(section);
 
     window.addEventListener('beforeunload', function (event) {
-        if (playerTile == 'X' || playerTile == 'O'){
+        if (playerTile == 'X' || playerTile == 'O') {
             reset();
         }
     });
@@ -373,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
 
                         const boardString = await response.text();
-                        gameState = boardString.split(':').slice(0,9); // Assuming the board is represented as "X:O:X:O:X:O:X:O:X:"
+                        gameState = boardString.split(':').slice(0, 9); // Assuming the board is represented as "X:O:X:O:X:O:X:O:X:"
                         updateBoard();
                         handleResultValidation();
                         // Count the number of 'X' and 'O' in the initial board state
@@ -459,16 +459,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (roundDraw) {
                     clearInterval(intervalId);
                     statusDisplay.innerHTML = drawMessage();
-                    
+
                     return;
                 }
             }
             function handleExitEvent() {
                 roundWon = true;
-                statusDisplay.innerHTML = "Other player left. You won.";
-                clearInterval(intervalId);
-                playerScore++;
-                scoreText.innerHTML = score();
+                if (playerTile == 'X' || playerTile == 'O') {
+                    statusDisplay.innerHTML = "Other player left. You won.";
+                    clearInterval(intervalId);
+                    playerScore++;
+                    scoreText.innerHTML = score();
+                }
+                else {
+                    statusDisplay.innerHTML = "Other player left.";
+                    clearInterval(intervalId);
+                }
+
+
 
             }
 
