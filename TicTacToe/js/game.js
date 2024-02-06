@@ -11,8 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function checkGameExistence() {
+        let checkUrl = `http://localhost:8080/tictactoe/tictactoeserver/check?key=${gameCode}`;
         try {
-            const response = await fetch(`http://localhost:8080/tictactoe/tictactoeserver/check?key=${gameCode}`);
+            const response = await fetch(checkUrl);
 
             if (!response.ok) {
                 throw new Error(`Failed to check game existence: ${response.status}`);
@@ -28,10 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function createGame() {
-        console.log("Creating " + gameCode);
+        let createUrl = `http://localhost:8080/tictactoe/tictactoeserver/createGame?key=${gameCode}`;
         try {
-
-            fetch(`http://localhost:8080/tictactoe/tictactoeserver/createGame?key=${gameCode}`)
+            fetch(createUrl)
                 .then(res => res.text())
                 .then(data => {
                     console.log("DATA: " + data);
@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function reset() {
         playerTile = null;
-        console.log("Resetting " + gameCode);
         var resetUrl = `http://localhost:8080/tictactoe/tictactoeserver/reset?key=${gameCode}`;
         // Make a GET request to the servlet
         fetch(resetUrl)
@@ -83,6 +82,69 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Append the popup div to the document body
         document.body.appendChild(popupDiv);
+    }
+
+    function createExitPopUp() {
+        // Create the popup div
+        var exitPopupDiv = document.createElement('div');
+        exitPopupDiv.id = 'exitPopup';
+        exitPopupDiv.style.display = 'none';
+
+        // Create the paragraph for the popup text
+        var exitPopupText = document.createElement('p');
+        exitPopupText.id = 'exitPopupText';
+
+        // Create the close button for the popup
+        var yesExitPopupBtn = document.createElement('button');
+        yesExitPopupBtn.id = 'yesExitPopup';
+        yesExitPopupBtn.textContent = 'Yes';
+
+        // Create the No button for the popup
+        var noExitPopupBtn = document.createElement('button');
+        noExitPopupBtn.id = 'noExitPopup';
+        noExitPopupBtn.textContent = 'No';
+
+        // Append the paragraph and button to the popup div
+        exitPopupDiv.appendChild(exitPopupText);
+        exitPopupDiv.appendChild(yesExitPopupBtn);
+        exitPopupDiv.appendChild(noExitPopupBtn);
+
+        // Append the popup div to the document body
+        document.body.appendChild(exitPopupDiv);
+    }
+
+    function openPopUp() {
+        var popup = document.getElementById('popup');
+        var popupText = document.getElementById('popupText');
+        var closePopupBtn = document.getElementById('closePopup');
+
+        popupText.innerText = "You are in a game";
+        popup.style.display = 'block';
+
+        // Close the popup when the close button is clicked
+        closePopupBtn.addEventListener('click', function () {
+            popup.style.display = 'none';
+        });
+    }
+
+    function openExitPopUp(callback) {
+        var exitPopup = document.getElementById('exitPopup');
+        var exitPopupText = document.getElementById('exitPopupText');
+        var noExitPopupBtn = document.getElementById('noExitPopup');
+        var yesExitPopupBtn = document.getElementById('yesExitPopup')
+
+        exitPopupText.innerText = "Reset Game?";
+        exitPopup.style.display = 'block';
+
+        yesExitPopupBtn.addEventListener('click', () => {
+            exitPopup.style.display = 'none';
+            callback(true);
+        });
+    
+        noExitPopupBtn.addEventListener('click', () => {
+            exitPopup.style.display = 'none';
+            callback(false);
+        });
     }
 
     function createModal(modalId, h2Text, placeholder) {
@@ -143,17 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
                 else {
-                    var popup = document.getElementById('popup');
-                    var popupText = document.getElementById('popupText');
-                    var closePopupBtn = document.getElementById('closePopup');
-
-                    popupText.innerText = "You are in a game";
-                    popup.style.display = 'block';
-
-                    // Close the popup when the close button is clicked
-                    closePopupBtn.addEventListener('click', function () {
-                        popup.style.display = 'none';
-                    });
+                    openPopUp();
                 }
             }
         });
@@ -181,6 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     createModal("createModal", "Enter Game Code", "(Auto-generate if empty)", true);
     createPopUp();
+    createExitPopUp();
 
     // Create section element
     const section = document.createElement('section');
@@ -313,10 +366,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector('.rst-btn').addEventListener('click', async () => {
         if (playerTile == 'X' || playerTile == "O") {
-            clearInterval(intervalId);
-            reset();
-            playerText.innerHTML = 'Player: '
-            statusDisplay.innerHTML = gameReset();
+            openExitPopUp((isReset) => {
+                console.log(isReset);
+                if (isReset) {
+                    clearInterval(intervalId);
+                    reset();
+                    playerText.innerHTML = 'Player: ';
+                    statusDisplay.innerHTML = gameReset();
+                }
+            });    
         }
 
     });
