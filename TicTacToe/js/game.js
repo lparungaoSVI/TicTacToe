@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add an event listener to the submit button
         submitBtn.addEventListener('click', async function (event) {
             var inputValue = userInput.value.trim();
-            if (userInput.value === '' || userInput.value == null) {
+            if (userInput.value.trim() === '' || userInput.value == null) {
                 inputValue = generateGameCode();
             }
             gameCode = inputValue;
